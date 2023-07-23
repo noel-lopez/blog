@@ -49,7 +49,6 @@ function Home({ posts }: HomeProps) {
 
 async function getPosts() {
   const posts = getAllFilesMetadata();
-  console.log("posts", posts);
 
   return posts;
 }

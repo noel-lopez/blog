@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { serialize } from "next-mdx-remote/serialize";
-import { MatterPostData, Post } from "@/shared/types";
+import { PostMdxData, Post } from "@/shared/types";
 
 const root = process.cwd();
 
@@ -19,12 +19,14 @@ export const getFileBySlug = async ({ slug }: { slug: string }) => {
 
   const source = await serialize(content, {}); // TODO: implement mdx prism for code highlighting
 
+  const frontMatter: Post = {
+    ...(data as PostMdxData),
+    slug,
+  };
+
   return {
     source,
-    frontMatter: {
-      slug,
-      ...data,
-    },
+    frontMatter,
   };
 };
 
@@ -40,7 +42,7 @@ export const getAllFilesMetadata = (): Post[] => {
     const { data } = matter(mdxSource);
 
     const post: Post = {
-      ...(data as MatterPostData),
+      ...(data as PostMdxData),
       slug: postSlug.replace(".mdx", ""),
     };
 
