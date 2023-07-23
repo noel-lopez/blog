@@ -27,12 +27,6 @@ export const components = {
       className="hover:underline hover:text-blue-600 text-blue-600 hover:bg-sky-50/50"
     />
   ),
-  a: (props: LinkProps) => (
-    <Link
-      {...props}
-      className="hover:underline hover:text-blue-600 text-blue-600 hover:bg-sky-50/50"
-    />
-  ),
   blockquote: (props: React.HTMLProps<HTMLQuoteElement>) => (
     <blockquote {...props} className="bg-blue-50 p-4" />
   ),
