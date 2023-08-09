@@ -49,7 +49,14 @@ export const getAllFilesMetadata = (): Post[] => {
       },
       ...allPosts,
     ];
-  }, []);
+  }, [])
+  .sort((a, b) => {
+    let arrDateA = a.date.split("-").map((item) => parseInt(item)); // DD-MM-YYYY
+    let arrDateB = b.date.split("-").map((item) => parseInt(item)); // DD-MM-YYYY
+    let dateA = new Date(arrDateA[2], arrDateA[1] - 1, arrDateA[0]);
+    let dateB = new Date(arrDateB[2], arrDateB[1] - 1, arrDateB[0]);
+    return dateB.getTime() - dateA.getTime();
+  });
 };
 
 export const getMDXFormattedDate = (date: string) => {
