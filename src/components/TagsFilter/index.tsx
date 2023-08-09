@@ -1,4 +1,4 @@
-import { tagClassMap } from "../Tag/controller"
+import { tagClassMap } from "../Tag/tagTypes"
 import Tag from "../Tag"
 
 export default function TagsFilter() {
