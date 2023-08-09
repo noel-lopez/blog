@@ -23,6 +23,16 @@ function Home({ posts }: HomeProps) {
         </h2>
       </header>
       <TagsFilter />
+      {posts.length === 0 && (
+        <>
+          <p className="text-center text-2xl w-full text-slate-600 mt-12 grid gap-4">
+           {' Aún no hay posts con esa etiqueta :('}
+           <span className="text-xl">
+           {' Proximamente habrá más contenido!'}
+           </span>
+          </p>
+         </>
+        )}
       <section className="grid grid-cols-[repeat(auto-fill,minmax(min(350px,100%),1fr))] gap-4 sm:gap-8">
         {posts.map((post) => (
           <PostCard key={post.slug} data={post} />
