@@ -1,4 +1,4 @@
-import { getTagClassname } from "./controller";
+import { getTagClassname } from "./tagTypes";
 
 interface Props {
   tag: string;
