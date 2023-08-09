@@ -1,0 +1,92 @@
+---
+title: "Domina las promesas en JavaScript"
+date: "31-07-2023"
+resume: "Aprende a trabajar con promesas en JavaScript para gestionar de forma eficiente el asincronismo en tus aplicaciones."
+tags:
+  - javascript
+---
+
+# Domina las promesas en JavaScript
+
+Las promesas son una parte fundamental del desarrollo moderno en JavaScript. Te permiten manejar operaciones asíncronas de manera más clara y evitar el temido "callback hell". Veamos cómo trabajar con promesas y cómo aprovechar sus ventajas en tu código.
+
+## Introducción a las Promesas
+
+Las promesas son objetos que representan un valor futuro, que puede estar disponible o no. Son útiles cuando trabajamos con operaciones que llevan tiempo, como llamadas a API, lectura y escritura de archivos, o consultas a bases de datos.
+
+```fakePromise.js
+const fetchData = () => {
+  return new Promise((resolve, reject) => {
+    // Simulación de operación asíncrona
+    setTimeout(() => {
+      const data = { /* Datos obtenidos */ };
+      if (data) {
+        resolve(data); // Operación exitosa
+      } else {
+        reject("Error al obtener datos"); // Operación fallida
+      }
+    }, 1000);
+  });
+};
+```
+
+## Chaining de Promesas
+
+Una de las ventajas clave de las promesas es la capacidad de encadenar múltiples operaciones asíncronas de manera ordenada y legible.
+
+```chaining.js
+fetchData()
+  .then(data => {
+    // Hacer algo con los datos
+    return processData(data);
+  })
+  .then(result => {
+    // Hacer algo con el resultado
+    return saveData(result);
+  })
+  .then(() => {
+    console.log("Operaciones completadas con éxito");
+  })
+  .catch(error => {
+    console.error("Error:", error);
+  });
+```
+
+## Promesas en paralelo
+
+Puedes ejecutar múltiples promesas en paralelo utilizando <Inline>Promise.all</Inline>
+
+```parallel.js
+const promises = [fetchData1(), fetchData2(), fetchData3()];
+
+Promise.all(promises)
+  .then(results => {
+    // Hacer algo con los resultados
+  })
+  .catch(error => {
+    console.error("Error:", error);
+  });
+```
+
+## Async / Await
+
+La sintaxis async/await es una forma más concisa y legible de trabajar con promesas.
+
+```async.js
+const fetchDataAsync = async () => {
+  try {
+    const data = await fetchData();
+    const result = await processData(data);
+    await saveData(result);
+    console.log("Operaciones completadas con éxito");
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+```
+
+## Conclusiones
+
+Dominar las promesas en JavaScript te permite escribir código más ordenado y mantenible al tratar operaciones asíncronas.
+
+Las promesas ofrecen un enfoque estructurado para manejar el flujo de control y evitar problemas de callback anidados. Con la introducción de async/await, trabajar con promesas se vuelve aún más simple y legible.
