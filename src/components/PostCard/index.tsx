@@ -1,13 +1,16 @@
 import { Post } from "@/shared/types";
 import Link from "next/link";
 import Tag from "../Tag";
+import { getMDXFormattedDate } from "@/lib/mdx";
 
 interface Props {
   data: Post;
 }
 
-// card with a light grey border, rounded and
 export default function PostCard({ data }: Props) {
+
+  const formattedDate = getMDXFormattedDate(data.date);
+
   return (
     <article className="relative before:content-['Léeme!'] before:absolute before:left-1/2 before:top-0 before:bg-blue-600 before:text-white before:-translate-x-1/2 before:-translate-y-1/2 before:-rotate-2 before:px-4 before:py-2 before:text-xs before:opacity-0 sm:before:hover:opacity-100 before:duration-300 before:rounded-full before:font-semibold before:z-20 before:shadow-lg before:shadow-blue-300">
       <Link
@@ -22,7 +25,7 @@ export default function PostCard({ data }: Props) {
         <h3 className="font-semibold text-xl">{data.title}</h3>
         <p className="text-sm text-slate-600">{data.resume}</p>
         <span className="text-sm font-semibold place-self-end">
-          {data.date}
+          {formattedDate}
         </span>
         <span className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 block w-1/4 h-1/4 blur-3xl bg-blue-200/75 group-hover/card:opacity-60 group-hover/card:w-full group-hover/card:h-full duration-300" />
       </Link>

@@ -51,3 +51,18 @@ export const getAllFilesMetadata = (): Post[] => {
     ];
   }, []);
 };
+
+export const getMDXFormattedDate = (date: string) => {
+  // date is formatted as DD-MM-YYYY
+  const [day, month, year] = date.split("-");
+  const dateObj = new Date(
+    parseInt(year),
+    parseInt(month) - 1,
+    parseInt(day)
+  );
+  return dateObj.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+};
