@@ -1,7 +1,8 @@
-import { getFileBySlug, getFiles } from "@/lib/mdx";
+import { getFileBySlug, getFiles, getMDXFormattedDate } from "@/lib/mdx";
 import { Post as IPost } from "@/shared/types";
-import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote/rsc";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import { components } from "./postComponents";
+import Link from "next/link";
 
 interface Props {
   content: string;
@@ -10,8 +11,10 @@ interface Props {
 
 function Post({ content, frontMatter }: Props) {
   return (
-    <main className="grid gap-8 max-w-3xl mb-36 mx-auto p-4">
+    <main className="grid gap-5 max-w-3xl mb-10 mx-auto p-4">
+      <p className="text-center mt-2 text-xs mb-2">{getMDXFormattedDate(frontMatter.date)}</p>
       <MDXRemote source={content} components={components} />
+      <Link href="/" className="hover:underline hover:text-blue-500 text-blue-400 mt-8">Volver al blog</Link>
     </main>
   );
 }
