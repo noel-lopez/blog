@@ -1,0 +1,197 @@
+---
+title: "Varias cuentas de GitHub en tu PC"
+date: "03-09-2023"
+resume: "Aprende cómo trabajar con varias cuentas de GitHub en un mismo equipo de forma ágil."
+tags:
+  - git
+  - productividad
+---
+
+# Cómo trabajar con varias cuentas de Github en VSCode usando claves SSH
+
+En el momento en el que estoy escribiendo este artículo, VSCode solo permite tener una cuenta logueada a la vez. Esto puede ser un problema si trabajas con varias cuentas de GitHub, por ejemplo, una personal y otra para el trabajo.
+
+Puedes solucionarlo con una configuración que sólo tendrás que hacer una vez y te permitirá trabajar con una cuenta u otra dependiendo de la carpeta del ordenador en la que te encuentres.
+
+En este artículo encontrarás el paso a paso de cómo hacerlo.
+
+## 1. Abre git bash y ve a la carpeta .ssh
+```bash
+cd ~/.ssh
+```
+
+## 2. Comprueba si ya tienes una clave SSH
+```bash
+ls -al ~/.ssh
+# las claves SSH terminan con la extensión .pub
+```
+Si ya tienes una clave SSH, puedes usarla o bien generar una nueva.
+
+## 3. Genera una nueva clave SSH
+```bash
+# ejecuta los comandos uno detrás de otro
+ssh-keygen -t ed25519 -C "cuenta_email_personal" -f ~/.ssh/username_github_personal
+ssh-keygen -t ed25519 -C "cuenta_email_trabajo" -f ~/.ssh/username_github_trabajo
+```
+
+- **-t**: Indica el tipo de clave que quieres generar. En este caso, ed25519.
+- **-C**: Es un comentario que te permite identificar la clave. En este caso, la cuenta de correo asociada a la cuenta de GitHub.
+- **-f**: Indica el nombre del archivo donde se guardará la clave. En este caso, debeis usar el nombre de usuario de GitHub.
+
+Si estos comandos te preguntan por un <Inline>passphrase</Inline>, puedes dejarlo en blanco y pulsar enter.
+
+## 4. Inicia el agente SSH
+
+```bash
+eval `ssh-agent -s`
+```
+
+Después de este comando deberías ver un mensaje similar a <Inline>Agent pid 1234</Inline>
+
+## 5. Añade las claves SSH al agente
+```bash
+# ejecuta los comandos uno detrás de otro
+ssh-add ~/.ssh/username_github_personal # clave SSH personal
+ssh-add ~/.ssh/username_github_trabajo # clave SSH trabajo
+```
+
+## 6. Añade las claves SSH a tu cuenta de GitHub
+
+Primero, abre el archivo .pub con VSCode o Vim y copia las claves.
+
+```bash
+# ejecuta los comandos uno detrás de otro
+code ~/.ssh/username_github_personal.pub
+code ~/.ssh/username_github_trabajo.pub
+```
+
+Después, ve a <Inline>Github → Settings → Keys</Inline> o sigue <Link href="https://github.com/settings/keys">este enlace</Link> y clica en "New SSH key".
+
+<Image src="/images/github-addkey.png" alt="Añadir clave SSH a GitHub" />
+
+## 7. Crea un archivo <Inline>config</Inline>
+
+```bash
+# ejecuta los comandos uno detrás de otro
+touch config
+code config     # abre el archivo con VSCode
+```
+
+Añade el siguiente contenido dentro del archivo <Inline>config</Inline> y reemplaza el valor de <Inline>username_github_personal</Inline>
+
+```bash
+# dentro de ~/.ssh/config
+Host *
+  IgnoreUnknown AddKeysToAgent,UseKeychain
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/username_github_personal # Clave por defecto (también puedes usar la del trabajo)
+```
+
+## 8. Ve a la carpeta inicial y crea estos tres archivos
+
+```bash
+cd ~
+touch .gitconfig
+touch .gitconfig.personal
+touch .gitconfig.trabajo
+```
+
+En caso de que tengas más de dos cuentas, crea un archivo .gitconfig para cada una.
+
+## 9. Contenido de los archivos .gitconfig
+
+Abre los tres archivos con VSCode y añade el siguiente contenido:
+
+```bash
+# dentro de ~/.gitconfig.personal
+[user]
+email = correo_electronico_personal
+name = Tu nombre
+ 
+[github]
+user = "username_github_personal" #debe ir entre comillas
+ 
+[core]
+sshCommand = "ssh -i ~/.ssh/username_github_personal" #debe ir entre comillas
+```
+
+```bash
+# dentro de ~/.gitconfig.trabajo
+[user]
+email = correo_electronico_trabajo
+name = Tu nombre
+
+[github]
+user = "username_github_trabajo" #debe ir entre comillas
+
+[core]
+sshCommand = "ssh -i ~/.ssh/username_github_trabajo" #debe ir entre comillas
+```
+
+```bash
+# dentro de ~/.gitconfig
+[includeIf "gitdir:C:/Users/<tu_usuario_pc>/Personal/"] # configuración personal para todos los proyectos en Personal/
+path = ~/.gitconfig.personal
+ 
+[includeIf "gitdir:C:/Users/<tu_usuario_pc>/Trabajo/"] # configuración de trabajo para todos los proyectos en Trabajo/
+path = ~/.gitconfig.trabajo
+ 
+[core]
+excludesfile = ~/.gitignore      # Ignora los archivos indicados en .gitignore
+```
+
+Después de esto, ya puedes cerrar los archivos.
+
+Ahora cuando clones un proyecto dentro de la carpeta <Inline>Personal</Inline> o la carpeta <Inline>Trabajo</Inline>, VSCode usará la configuración correspondiente.
+
+## Prueba que todo funciona correctamente
+
+Aquí tienes un ejemplo de cómo clonar un proyecto con cada cuenta.
+
+```bash
+# clona un proyecto en la carpeta Personal
+cd ~/Personal
+git clone git@github.com:username_github_personal/nombre_proyecto.git
+
+# clona un proyecto en la carpeta Trabajo
+cd ~/Trabajo
+git clone git@github.com:username_github_trabajo/nombre_proyecto.git
+```
+
+Es recomendable que trates de clonar repositorios privados de cada cuenta para asegurarte.
+
+También puedes probar a hacer un commit y un push en cada proyecto y comprobar en GitHub que se hayan realizado con las cuentas correctas.
+
+### TIPS PARA ERRORES COMUNES
+
+Comprueba que todos los valores que se deben reemplazar estén correctos y que no te hayas dejado ninguno sin reemplazar.
+
+Por ejemplo, todos los valores de tus username y tus cuentas de correo que aparecen en el artículo como *username_github_personal*, *username_github_trabajo*, etc. deben ser reemplazados.
+
+`1.` Usa el comando <Inline>ssh -vvvvA -T git@github.com</Inline> para obtener un diagnóstico de si algo va mal.
+
+`2.` Usa <Inline>ssh-add -l</Inline> para comprobar las claves SSH añadidas al agente.
+
+`3.` Usa <Inline>git config --list</Inline> para comprobar las condiciones de la configuración de git.
+
+`4.` Si estás obteniendo un error que dice *connect to host github.com port 22: Connection timed out* añade el código de abajo al archivo config.
+
+```bash
+# dentro de  ~/.ssh/config
+Host *
+  IgnoreUnknown AddKeysToAgent,UseKeychain
+  AddKeysToAgent yes
+  UseKeychain yes
+  Port 443
+  Hostname ssh.github.com
+  IdentityFile ~/.ssh/username_github_personal # Clave por defecto
+```
+
+`5.` Prueba a comentar la línea <Inline>IdentityFile ~/.ssh/username_github_personal</Inline> dentro del archivo ~/.ssh/config.
+
+### GRACIAS POR LEER 🥳
+
+Si tienes alguna duda o sugerencia, puedes contactar conmigo a través de <Link href="https://twitter.com/noeldev_">Twitter</Link>.
+
+Si te ha gustado el artículo, puedes compartirlo con más programadores a los que les pueda ser útil.
