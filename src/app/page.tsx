@@ -17,7 +17,7 @@ function Home({ posts, currentTag }: HomeProps) {
         </h1>
         <h2 className="text-center selection:bg-black selection:text-white">
           Soy{" "}
-          <span className="text-blue-300 selection:bg-black selection:text-blue-100">
+          <span className="text-blue-400 selection:bg-black selection:text-blue-100">
             Noel Lopez
           </span>{" "}
           y hablo de tecnología, programación y experiencias personales
