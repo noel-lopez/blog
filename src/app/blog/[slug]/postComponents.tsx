@@ -22,6 +22,8 @@ export const components = {
     <Image
       {...props}
       className="h-auto leading-none w-full"
+      width={props.width || 1280}
+      height={props.height || 720}
       alt={props.alt || "Imagen"}
     />
   ),
@@ -40,6 +42,10 @@ export const components = {
   // Inline code
   Inline: (props: React.HTMLProps<HTMLElement>) => (
     <code {...props} className="bg-blue-50 p-0.5 border border-blue-300 text-black/95 rounded-lg inline-block " />
+  ),
+  // cursive text
+  em: (props: React.HTMLProps<HTMLElement>) => (
+    <span {...props} className="italic font-medium" />
   ),
   ul: (props: React.HTMLProps<HTMLUListElement>) => (
     <ul {...props} className="list-disc list-inside" />

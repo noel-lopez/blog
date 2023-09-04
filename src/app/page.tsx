@@ -5,9 +5,10 @@ import { Post } from "@/shared/types";
 
 interface HomeProps {
   posts: Post[];
+  currentTag?: string;
 }
 
-function Home({ posts }: HomeProps) {
+function Home({ posts, currentTag }: HomeProps) {
   return (
     <main className="max-w-5xl mx-auto p-4 sm:p-8 mb-16 grid gap-16">
       <header className="flex flex-col items-center gap-2 py-8">
@@ -16,13 +17,13 @@ function Home({ posts }: HomeProps) {
         </h1>
         <h2 className="text-center selection:bg-black selection:text-white">
           Soy{" "}
-          <span className="text-blue-300 selection:bg-black selection:text-blue-100">
+          <span className="text-blue-400 selection:bg-black selection:text-blue-100">
             Noel Lopez
           </span>{" "}
           y hablo de tecnología, programación y experiencias personales
         </h2>
       </header>
-      <TagsFilter />
+      <TagsFilter currentTag={currentTag} />
       {posts.length === 0 && (
         <>
           <p className="text-center text-2xl w-full text-slate-600 mt-12 grid gap-4">
@@ -48,7 +49,16 @@ async function getPosts() {
   return posts;
 }
 
-export default async function HomePage() {
-  const posts = await getPosts();
-  return <Home posts={posts} />;
+interface PageProps {
+  params: { slug: string }
+  searchParams: { [key: string]: string | undefined }
+}
+
+export default async function HomePage({ searchParams }: PageProps) {
+  let posts = await getPosts();
+  const tagFilter = searchParams.tag;
+  if (tagFilter) {
+    posts = posts.filter((post) => post.tags.includes(tagFilter));
+  }
+  return <Home posts={posts} currentTag={tagFilter} />;
 }
