@@ -1,0 +1,203 @@
+---
+title: "Understanding Test Doubles"
+date: "14-06-2024"
+resume: "Learn what test doubles are and how to use them in your tests. A comprehensive guide for beginners."
+tags:
+  - testing
+---
+
+# Understanding Test Doubles: Comprehensive Guide for Beginners
+
+Testing is an essential part of software development, ensuring that our code works as expected and helping catch bugs early in the development process.
+
+One concept that's vital in testing, especially in Test Driven Development (TDD), is the use of test doubles. If you're new to this term, don't worry - this post will break it down for you with explanations and examples.
+
+## What are Test Doubles?
+
+Test doubles are objects that stand in for real components in your system during testing. They support good Object-Oriented design by guiding the discovery of a coherent system of types within a codebase.
+
+Let's explore **5 different types of test doubles** with an example around this interface:
+
+```java
+public interface Authorizer {
+    public Boolean authorize(String username, String password);
+}
+```
+
+## Dummy
+
+A dummy object is used when you need to pass it into something but you don't care about its value or behavior. For example: As a part of a test, when you must pass an argument, but you know the argument will never be used.
+
+```java
+public class DummyAuthorizer implements Authorizer {
+    public Boolean authorize(String username, String password) {
+        return null;
+    }
+}
+```
+
+### Usage Example
+
+```java
+public class System {
+	public System(Authorizer authorizer) {
+		this.authorizer = authorizer;
+	}
+	
+	public int loginCount() {
+		// returns number of logged in users.
+	}
+}
+
+@Test
+public void newlyCreatedSystem_hasNoLoggedInUsers() {
+	System system = new System(new DummyAuthorizer());
+	assertEquals(0, system.loginCount());
+}
+```
+
+## Stub
+
+A stub provides predefined responses to method calls, useful when you want to control the environment and test specific scenarios.
+
+```java
+public class AcceptingAuthorizerStub implements Authorizer {
+	public Boolean authorize(String username, String password) {
+		return true;
+	}
+}
+```
+
+### Usage Example
+
+Suppose you need to test a part of your system that requires a logged-in user, but you don't want to re-test the login process itself. In this scenario, you should use a **Stub** to simulate a successful login.
+
+```java
+@Test
+public void testUserAccessAfterLogin() {
+    System system = new System(new AcceptingAuthorizerStub());
+    // Test actions that require a logged-in user.
+}
+```
+
+Stubs help you **remove unnecessary coupling** by isolating the component being tested.
+
+## Spy
+
+A spy is similar to a stub but with added capabilities to record information about how it was called.
+
+```java
+public class AcceptingAuthorizerSpy implements Authorizer {
+	public boolean authorizeWasCalled = false;
+	
+	public Boolean authorize(String username, String password) {
+		authorizeWasCalled = true;
+		return true;
+	}
+}
+```
+
+### Usage Example
+
+Spies can verify that certain methods were called, how often, and with what arguments.
+
+```java
+@Test
+public void testAuthorizeMethodCalled() {
+	Authorizer spy = new AcceptingAuthorizerSpy();
+	System system = new System(spy);
+	// Perform actions that should trigger authorize.
+	assertTrue(spy.authorizeWasCalled);
+}
+```
+
+So a Spy, spies on the caller.
+
+You can use Spies to see inside the working of the algorithms you are testing.
+
+But **be careful**! The more you spy, the tighter you **couple** your tests to the implementation. And that leads to fragile tests.
+
+## Mock
+
+A mock is a more sophisticated spy that can set expectations on its behavior and verify them.
+
+```java
+public class AcceptingAuthorizerVerificationMock implements Authorizer {
+	public boolean authorizeWasCalled = false;
+	
+	public Boolean authorize(String username, String password) {
+		authorizeWasCalled = true;
+		return true;
+	}
+	
+	public boolean verify() {
+		return authorizeWasCalled;
+	}
+}
+```
+
+It looks like we moved the assertion from the test into the <Inline>verify</Inline> method of the mock, right? Because **Mocks** know what they are testing.
+
+### Usage Example
+
+```java
+@Test
+public void testAuthorizeBehavior() {
+	Authorizer mock = new AcceptingAuthorizerVerificationMock();
+	System system = new System(mock);
+	// Perform actions that should trigger authorize.
+	assertTrue(mock.verify());
+}
+```
+
+The main point about the Mock is that it is testing **behavior**.
+
+The mock is not so interested in the return values of functions. It's more interested in what function were called, with what arguments, when, and how often.
+
+A mock is always a spy, with the difference that the mock knows what behavior to expect.
+
+## Fake
+
+A fake is a working implementation that is used for testing purposes. It has business logic but is simpler than the real system.
+
+```java
+public class AcceptingAuthorizerFake implements Authorizer {
+	public Boolean authorize(String username, String password) {
+		return username.equals("Bob");
+	}
+}
+```
+
+In this example everybody named "Bob" will be authorized.
+
+It's important to know that none of the other test doubles we've talked about so far have business behavior, but Fakes do have it. So fakes are different at a fundamental level.
+
+> **We can say that a mock is a kind of spy, a spy is a kind of stub, and a stub is a kind of dummy. But a fake isn't a kind of any of them. It's a completely different kind of test double.**
+
+### Usage Example
+
+```java
+@Test
+public void fakeAuthorizerFake() {
+	AcceptingAuthorizerFake fake = new AcceptingAuthorizerFake();
+	System system = new System(fake);
+	fake.authorize("Alice", "password");
+    // Assert on something that should happen when user is not authorized.
+	fake.authorize("Bob", "password");
+    // Assert on something that should happen when user is authorized.
+}
+```
+
+Take care about the fact that Fakes can get extremely complicated. So complicated they need unit tests of their own. At the extremes the fake becomes the real system.
+
+## Conclusion
+
+Test doubles are a powerful tool in your testing toolbox. By understanding and using different types of test doubles you can write more effective tests and improve the quality of your code.
+
+Remember, each type serves a specific purpose, so choose the one that best fits your testing needs.
+
+It's worth noting that nowadays, many developers don't differentiate between the different kind of test doubles and simply refer to all of them as "mocks". 
+
+This is largely due to the prevalence of mocking libraries, which provide powerful tools that can serve as dummies, stubs, spies, or mocks depending on the way you use them.
+
+In the future, I plan to write another post about how to use some of my favorite mocking libraries with practical examples. Stay tuned!
