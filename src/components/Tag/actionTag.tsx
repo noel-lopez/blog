@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getTagClassname } from "./tagTypes";
+import { getTagClassname, getTagHref } from "./tagTypes";
 
 interface Props {
   tag: string;
@@ -7,8 +7,9 @@ interface Props {
 }
 
 export default function ActionTag({ tag, currentTag }: Props) {
+
   return (
-    <Link href={`/?tag=${tag}`}>
+    <Link href={getTagHref({tag, currentTag})}>
       <span
       className={`cursor-pointer text-xs font-semibold px-4 py-2 rounded-full ${getTagClassname(
         { tag, currentTag }

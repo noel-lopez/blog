@@ -15,11 +15,6 @@ export default function TagsFilter({currentTag}: TagsFilterProps) {
       {Object.keys(tagClassMap).map((tag) => (
         <ActionTag key={tag} tag={tag} currentTag={currentTag} />
       ))}
-      {currentTag && (
-        <Link href="/" className="text-neutral-900/70 text-center text-sm font-semibold mt-4 hover:underline underline-offset-4">
-          Clear filter
-        </Link>
-      )}
     </div>
   )
 }
