@@ -13,23 +13,23 @@ function Home({ posts, currentTag }: HomeProps) {
     <main className="max-w-5xl mx-auto p-4 sm:p-8 mb-16 grid gap-16">
       <header className="flex flex-col items-center gap-2 py-8">
         <h1 className="font-bold text-4xl sm:text-6xl text-center tracking-tighter leading-tight selection:bg-black selection:text-white">
-          Desarrollo y Diseño Web
+          Web Dev and Design
         </h1>
         <h2 className="text-center selection:bg-black selection:text-white">
-          Soy{" "}
+          I{"'"}m{" "}
           <span className="text-blue-400 selection:bg-black selection:text-blue-100">
             Noel Lopez
           </span>{" "}
-          y hablo de tecnología, programación y experiencias personales
+          and I talk about technology, programming, and personal experiences
         </h2>
       </header>
       <TagsFilter currentTag={currentTag} />
       {posts.length === 0 && (
         <>
           <p className="text-center text-2xl w-full text-slate-600 mt-12 grid gap-4">
-           {' Aún no hay posts con esa etiqueta :('}
+           {' There are no posts with that tag yet :('}
            <span className="text-xl">
-           {' Proximamente habrá más contenido!'}
+           {' More content coming soon!'}
            </span>
           </p>
          </>

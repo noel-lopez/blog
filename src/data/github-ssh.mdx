@@ -1,199 +1,198 @@
 ---
-title: "Varias cuentas de GitHub en tu PC"
+title: "Work with Multiple GitHub Accounts"
 date: "24-10-2023"
-resume: "Aprende cómo trabajar con varias cuentas de GitHub en un mismo equipo de forma ágil."
+resume: "Learn how to work with multiple GitHub accounts on the same computer in an agile way."
 tags:
   - git
-  - productividad
+  - productivity
 ---
 
-# Cómo trabajar con varias cuentas de Github en VSCode usando claves SSH
+# How to work with multiple Github accounts in VSCode using SSH keys
 
-En el momento en el que estoy escribiendo este artículo, VSCode solo permite tener una cuenta logueada a la vez. Esto puede ser un problema si trabajas con varias cuentas de GitHub, por ejemplo, una personal y otra para el trabajo.
+At the time I'm writing this post, VSCode only allows you to have one account logged in at a time. This can be a problem if you work with multiple GitHub accounts, for example, a personal one and another for work.
 
-Puedes solucionarlo con una configuración que sólo tendrás que hacer una vez y te permitirá trabajar con una cuenta u otra dependiendo de la carpeta del ordenador en la que te encuentres.
+You can solve this with a configuration that you only have to do once and that will allow you to work with one account or another depending on the folder of the computer you are in.
 
-En este artículo encontrarás el paso a paso de cómo hacerlo.
+In this post you will find the step by step to do this configuration.
 
-## 1. Abre git bash y ve a la carpeta .ssh
+## 1. Open git bash and go to the .ssh folder
 ```bash
 cd ~/.ssh
 ```
 
-## 2. Comprueba si ya tienes una clave SSH
+## 2. Check if you already have an SSH key
 ```bash
 ls -al ~/.ssh
-# las claves SSH terminan con la extensión .pub
+# SSH keys end with the .pub extension
 ```
-Si ya tienes una clave SSH, puedes usarla o bien generar una nueva.
+If you already have an SSH key, you can use it or generate a new one.
 
-## 3. Genera una nueva clave SSH
+## 3. Generate a new SSH key
 ```bash
-# ejecuta los comandos uno detrás de otro
-ssh-keygen -t ed25519 -C "cuenta_email_personal" -f ~/.ssh/username_github_personal
-ssh-keygen -t ed25519 -C "cuenta_email_trabajo" -f ~/.ssh/username_github_trabajo
+# run the commands one after the other
+ssh-keygen -t ed25519 -C "personal_email_account" -f ~/.ssh/personal_github_username
+ssh-keygen -t ed25519 -C "work_email_account" -f ~/.ssh/work_github_username
 ```
 
-- **-t**: Indica el tipo de clave que quieres generar. En este caso, ed25519.
-- **-C**: Es un comentario que te permite identificar la clave. En este caso, la cuenta de correo asociada a la cuenta de GitHub.
-- **-f**: Indica el nombre del archivo donde se guardará la clave. En este caso, debeis usar el nombre de usuario de GitHub.
+- **-t**: Indicates the type of key you want to generate. In this case, ed25519.
+- **-C**: It is a comment that allows you to identify the key. In this case, the email account associated with the GitHub account.
+- **-f**: Indicates the name of the file where the key will be saved. In this case, you should use the GitHub username.
 
-Si estos comandos te preguntan por un <Inline>passphrase</Inline>, puedes dejarlo en blanco y pulsar enter.
+If these commands ask you for a <Inline>passphrase</Inline>, you can leave it blank and press enter.
 
-## 4. Inicia el agente SSH
+## 4. Start the SSH agent
 
 ```bash
 eval `ssh-agent -s`
 ```
 
-Después de este comando deberías ver un mensaje similar a <Inline>Agent pid 1234</Inline>
+After this command you should see a message similar to <Inline>Agent pid 1234</Inline>
 
-## 5. Añade las claves SSH al agente
+## 5. Add the SSH keys to the agent
 ```bash
-# ejecuta los comandos uno detrás de otro
-ssh-add ~/.ssh/username_github_personal # clave SSH personal
-ssh-add ~/.ssh/username_github_trabajo # clave SSH trabajo
+# run the commands one after the other
+ssh-add ~/.ssh/personal_github_username # personal SSH key
+ssh-add ~/.ssh/work_github_username # work SSH key
 ```
 
-## 6. Añade las claves SSH a tus cuentas de GitHub
+## 6. Add the SSH keys to your GitHub accounts
 
-Primero, abre el archivo .pub con VSCode o Vim y copia las claves.
+First, open the .pub file with VSCode or Vim and copy the keys.
 
 ```bash
-# ejecuta los comandos uno detrás de otro
-code ~/.ssh/username_github_personal.pub
-code ~/.ssh/username_github_trabajo.pub
+# run the commands one after the other
+code ~/.ssh/personal_github_username.pub
+code ~/.ssh/work_github_username.pub
 ```
 
-Después, ve a <Inline>Github → Settings → Keys</Inline> o sigue <Link href="https://github.com/settings/keys">este enlace</Link> y clica en "New SSH key".
+Then, go to <Inline>Github → Settings → Keys</Inline> or follow <Link href="https://github.com/settings/keys">this link</Link> and click on "New SSH key".
 
-<Image src="/images/github-addkey.png" alt="Añadir clave SSH a GitHub" />
+<Image src="/images/github-addkey.png" alt="Add SSH key to GitHub" />
 
-Haz esto para cada cuenta de GitHub, añadiendo la clave SSH correspondiente.
+Do this for each GitHub account, adding the corresponding SSH key.
 
-## 7. Crea un archivo <Inline>config</Inline>
+## 7. Create a <Inline>config</Inline> file
 
 ```bash
-# ejecuta los comandos uno detrás de otro
+# run the commands one after the other
 touch config
-code config     # abre el archivo con VSCode
+code config # open the file with VSCode
 ```
 
-Añade el siguiente contenido dentro del archivo <Inline>config</Inline> y reemplaza el valor de <Inline>username_github_personal</Inline>
+Add the following configuration to the file, replacing <Inline>personal_github_username</Inline> with your personal Github username.
 
 ```bash
-# dentro de ~/.ssh/config
+# inside ~/.ssh/config
 Host *
-  IgnoreUnknown AddKeysToAgent,UseKeychain
   AddKeysToAgent yes
   UseKeychain yes
-  IdentityFile ~/.ssh/username_github_personal # Clave por defecto (también puedes usar la del trabajo)
+  IdentityFile ~/.ssh/personal_github_username # Default key (you can also use the work key if you prefer)
 ```
 
-## 8. Ve a la carpeta inicial y crea estos tres archivos
+8. Go to the home directory and create these three files
 
 ```bash
 cd ~
 touch .gitconfig
 touch .gitconfig.personal
-touch .gitconfig.trabajo
+touch .gitconfig.work
 ```
 
-En caso de que tengas más de dos cuentas, crea un archivo .gitconfig para cada una.
+If you have more than two accounts, create a .gitconfig file for each one.
 
-## 9. Contenido de los archivos .gitconfig
+## 9. Contents of the .gitconfig files
 
-Abre los tres archivos con VSCode y añade el siguiente contenido:
-
-```bash
-# dentro de ~/.gitconfig.personal
-[user]
-email = correo_electronico_personal
-name = Tu nombre
- 
-[github]
-user = "username_github_personal" #debe ir entre comillas
- 
-[core]
-sshCommand = "ssh -i ~/.ssh/username_github_personal" #debe ir entre comillas
-```
+Open the .gitconfig files and add the following content:
 
 ```bash
-# dentro de ~/.gitconfig.trabajo
+# inside ~/.gitconfig.personal
 [user]
-email = correo_electronico_trabajo
-name = Tu nombre
+email = personal_email
+name = Your Name
 
 [github]
-user = "username_github_trabajo" #debe ir entre comillas
+user = "personal_github_username" #must be in quotes
 
 [core]
-sshCommand = "ssh -i ~/.ssh/username_github_trabajo" #debe ir entre comillas
+sshCommand = "ssh -i ~/.ssh/personal_github_username" #must be in quotes
 ```
 
 ```bash
-# dentro de ~/.gitconfig
-[includeIf "gitdir:C:/Users/<tu_usuario_pc>/Personal/"] # configuración personal para todos los proyectos en Personal/
+# inside ~/.gitconfig.work
+[user]
+email = work_email
+name = Your Name
+
+[github]
+user = "work_github_username" #must be in quotes
+
+[core]
+sshCommand = "ssh -i ~/.ssh/work_github_username" #must be in quotes
+```
+
+```bash
+# inside ~/.gitconfig
+[includeIf "gitdir:C:/Users/<your_pc_username>/Personal/"] # personal configuration for all projects in Personal/
 path = ~/.gitconfig.personal
- 
-[includeIf "gitdir:C:/Users/<tu_usuario_pc>/Trabajo/"] # configuración de trabajo para todos los proyectos en Trabajo/
-path = ~/.gitconfig.trabajo
- 
+
+[includeIf "gitdir:C:/Users/<your_pc_username>/Work/"] # work configuration for all projects in Work/
+path = ~/.gitconfig.work
+
 [core]
-excludesfile = ~/.gitignore      # Ignora los archivos indicados en .gitignore
+excludesfile = ~/.gitignore # Ignore the files indicated in .gitignore
 ```
 
-Después de esto, ya puedes cerrar los archivos.
+Save and close the files.
 
-Ahora cuando clones un proyecto dentro de la carpeta <Inline>Personal</Inline> o la carpeta <Inline>Trabajo</Inline>, VSCode usará la configuración correspondiente.
+Now when you clone a project inside the <Inline>Personal</Inline> or <Inline>Work</Inline> folder, the corresponding configuration will be applied.
 
-## Prueba que todo funciona correctamente
+## Test that everything works correctly
 
-Aquí tienes un ejemplo de cómo clonar un proyecto con cada cuenta.
+I'm leaving you an example of how to clone a project with each account.
 
 ```bash
-# clona un proyecto en la carpeta Personal
+# Clone a project in the Personal folder
 cd ~/Personal
-git clone git@github.com:username_github_personal/nombre_proyecto.git
+git clone git@github.com:personal_github_username/project_name.git
 
-# clona un proyecto en la carpeta Trabajo
-cd ~/Trabajo
-git clone git@github.com:username_github_trabajo/nombre_proyecto.git
+# Clone a project in the Work folder
+cd ~/Work
+git clone git@github.com:work_github_username/project_name.git
 ```
 
-Es recomendable que trates de clonar repositorios privados de cada cuenta para asegurarte.
+I recommend that you try cloning private repositories to make sure everything is working correctly.
 
-También puedes probar a hacer un commit y un push en cada proyecto y comprobar en GitHub que se hayan realizado con las cuentas correctas.
+You can also try to commit and push changes to see on GitHub that they were made with the correct accounts.
 
-### TIPS PARA ERRORES COMUNES
+### TIPS FOR COMMON ERRORS
 
-Comprueba que todos los valores que se deben reemplazar estén correctos y que no te hayas dejado ninguno sin reemplazar.
+Check that all the values to be replaced are correct and that you didn't miss any without replacing them.
 
-Por ejemplo, todos los valores de tus username y tus cuentas de correo que aparecen en el artículo como *username_github_personal*, *username_github_trabajo*, etc. deben ser reemplazados.
+`1.` Use the command <Inline>ssh -vvvvA -T git@github.com</Inline> to get a diagnostic if something goes wrong.
 
-`1.` Usa el comando <Inline>ssh -vvvvA -T git@github.com</Inline> para obtener un diagnóstico de si algo va mal.
+`2.` Use <Inline>ssh-add -l</Inline> to check the SSH keys added to the agent.
 
-`2.` Usa <Inline>ssh-add -l</Inline> para comprobar las claves SSH añadidas al agente.
+`3.` Use <Inline>git config --list</Inline> to check the git configuration settings.
 
-`3.` Usa <Inline>git config --list</Inline> para comprobar las condiciones de la configuración de git.
-
-`4.` Si estás obteniendo un error que dice *connect to host github.com port 22: Connection timed out* añade el código de abajo al archivo config.
+`4.` If you are getting the error *connect to host github.com port 22: Connection timed out* add the code below to the config file.
 
 ```bash
-# dentro de  ~/.ssh/config
+# inside ~/.ssh/config
 Host *
   IgnoreUnknown AddKeysToAgent,UseKeychain
   AddKeysToAgent yes
   UseKeychain yes
   Port 443
   Hostname ssh.github.com
-  IdentityFile ~/.ssh/username_github_personal # Clave por defecto
+  IdentityFile ~/.ssh/personal_github_username # Default key
 ```
 
-`5.` Prueba a comentar la línea <Inline>IdentityFile ~/.ssh/username_github_personal</Inline> dentro del archivo ~/.ssh/config.
+`5.` Try commenting out the line <Inline>IdentityFile ~/.ssh/personal_github_username</Inline> inside the ~/.ssh/config file.
 
-### GRACIAS POR LEER 🥳
+### THANKS FOR READING 🥳
 
-Si tienes alguna duda o sugerencia, puedes contactar conmigo a través de <Link href="https://twitter.com/noeldev_">Twitter</Link> o <Link href="https://www.linkedin.com/in/nlopezmo/">LinkedIn</Link>.
+If you have any questions or feedback, you can contact me via <Link href="https://twitter.com/noeldev_">Twitter</Link> or <Link href="https://www.linkedin.com/in/nlopezmo/">LinkedIn</Link>.
 
-Si te ha gustado el artículo, puedes compartirlo con más programadores a los que les pueda ser útil.
+If you liked the post, you can share it with more developers who might find it useful. 
+
+Thank you! 🙌
